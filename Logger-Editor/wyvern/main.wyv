@@ -1,0 +1,11 @@
+
+// require java
+// require platform
+// platform java
+require java
+import fileIO
+import wordProcessor
+
+val io = fileIO(java)
+wordProcessor(io)
+

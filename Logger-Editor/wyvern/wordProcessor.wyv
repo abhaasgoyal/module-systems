@@ -1,0 +1,7 @@
+module def wordProcessor(io : FileIO) : WordProcessor
+
+import logger
+
+val log = logger(io)
+
+val x : system.Int = 5
