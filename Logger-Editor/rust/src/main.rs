@@ -1,28 +1,29 @@
 //! A simple illustration of the `cap-std` API to stores data in a project's directory
 
+// Optional TODOs for refinement
+// TODO: Parse as command-line arguments for faster prototyping.
+// TODO: While creating logger, pass-in root folder?
+
 mod extension;
 mod logging;
 
 use logging::Logger;
 use extension::WordCloud;
 
-// Show how using relative path names can lead to problems
-
 fn main() -> anyhow::Result<()> {
-    // TODO: Parse command-line arguments.
 
     let file_name = "dir/log.txt";
     let value = "temp";
 
-    // Call logger from here to create appropriate dir to write
+    // Create Logger and Extension Object
     let logger = Logger::create_logger(file_name).unwrap();
+    let w_cloud = WordCloud::create_word_cloud(logger);
 
-    // Call extension from here and pass in the appropriate
+    // Sample value for computation and writing to logger file
     let sample_word_counts = [1, 2, 3, 4, 5];
 
-    let w_cloud = WordCloud::create_word_cloud(logger);
-    w_cloud.log_total_count(&sample_word_counts);
-    w_cloud.log_input(value);
+    w_cloud.log_total_count(&sample_word_counts)?;
+    w_cloud.log_input(value)?;
 
     Ok(())
 }

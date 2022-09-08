@@ -10,6 +10,9 @@ pub struct Logger {
 }
 
 impl Logger {
+
+    /// Create logger object from $DATA_DIR as the root dir and a relative file
+    /// location from within the root dir
     pub fn create_logger(rel_file_name: &str) -> anyhow::Result<Self> {
         let key: PathBuf = PathBuf::from(rel_file_name);
 
@@ -24,7 +27,7 @@ impl Logger {
 
         // Get root dir from where relative paths won't work
         let root_dir = project_dirs.data_dir()?;
-        let mut log_dir = project_dirs.data_dir()?; // So that log_dir is not potentially empty
+        let mut log_dir = project_dirs.data_dir()?; // So that log_dir is not potentially empty, could be a better way without calling the operation twice
 
         // Create new directory and set data_dir to that path
         let parent = key.parent();
@@ -40,6 +43,7 @@ impl Logger {
         Ok(Logger { log_dir, file_name })
     }
 
+    /// Appends text entry to logger file
     pub fn append_to_log(&self, entry: String) -> anyhow::Result<()> {
         let Logger { log_dir, file_name } = self;
         // Open in write append mode, and create file if it doesn't exist
@@ -55,8 +59,4 @@ impl Logger {
 
         Ok(())
     }
-}
-
-fn invalid_create_logger() -> anyhow::Error {
-    anyhow::Error::msg("couldn't create folder for log")
 }
