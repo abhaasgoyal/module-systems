@@ -3,39 +3,26 @@
 use cap_directories::{ambient_authority, ProjectDirs};
 use std::path::PathBuf;
 
-mod logging;
 mod extension;
+mod logging;
+use crate::logging::create_logger;
 
 
 fn main() -> anyhow::Result<()> {
     // Parse command-line arguments.
     // TODO: Show how using relative path names can lead to problems
-    let key: PathBuf = PathBuf::from("../key");
-    let value = "new_value4";
 
-    // Obtain the `data_dir` for this program.
-    let project_dirs = ProjectDirs::from(
-        "com.example",
-        "Example Organization",
-        "Cap-std Key-Value CLI Example",
-        ambient_authority(),
-    ).unwrap();
-    let mut data_dir = project_dirs.data_dir()?;
+    // Call logger from here to create appropriate dir to write
+    // Call extension from here and pass in the appropriate
 
-    // Create new directory and set data_dir to that path
-    let parent = key.parent();
-    let file_name = key.file_name().unwrap();
-    if let Some(parent) = parent {
-        if !parent.as_os_str().is_empty() {
-            data_dir.create_dir_all(parent)?;
-            data_dir = data_dir.open_dir(parent)?;
-        }
-    }
+    let file_name = "Hello";
+    let value = "new_value1";
+
+    let data_dir = create_logger("Hello", "new_value1");
+
 
     // Write the value in the new file.
-    data_dir.write(file_name, value)?;
-
-    // TODO: Show create a logging instance and be able to write to it
+    data_dir.unwrap().write(file_name, value)?;
 
     Ok(())
 }
