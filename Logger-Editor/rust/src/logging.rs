@@ -39,7 +39,7 @@ impl Logger {
         })
     }
 
-    pub fn append_to_log(self, entry: &str) -> anyhow::Result<()> {
+    pub fn append_to_log(&self, entry: String) -> anyhow::Result<()> {
         let Logger {
             data_dir,
             file_name,
