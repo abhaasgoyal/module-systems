@@ -21,10 +21,8 @@ fn main() -> anyhow::Result<()> {
     let sample_word_counts = [1, 2, 3, 4, 5];
 
     let w_cloud = WordCloud::create_word_cloud(logger);
-    w_cloud.save_total_count(&sample_word_counts);
-    w_cloud.save_input(value);
-
-    // logger.append_to_log(value)?;
+    w_cloud.log_total_count(&sample_word_counts);
+    w_cloud.log_input(value);
 
     Ok(())
 }
