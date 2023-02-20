@@ -1,11 +1,8 @@
-
-// require java
-// require platform
-// platform java
 require java
-import fileIO
-import wordProcessor
 
-val io = fileIO(java)
-wordProcessor(io)
+import fileSystem
+import logger
 
+val fs = fileSystem(java)
+val logFile = fs.fileFor("log.txt")
+val logger = logger(logFile)

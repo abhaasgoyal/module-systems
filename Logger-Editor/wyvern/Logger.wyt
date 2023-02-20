@@ -1,2 +1,2 @@
 resource type Logger
-	def log(x : Int) : Int
+  def updateLog(msg: String): Unit
