@@ -6,3 +6,5 @@ import logger
 val fs = fileSystem(java)
 val logFile = fs.fileFor("log.txt")
 val logger = logger(logFile)
+
+logger.updateLog("Hello")
