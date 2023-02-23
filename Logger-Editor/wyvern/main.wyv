@@ -10,7 +10,7 @@ val logFile = fs.fileFor("log.txt")
 val logger = logger(logFile)
 val word = wordFactory.create("temp")
 
-// val wordCloud = wordCloud(logger, word)
+val wordCloud = wordCloud(logger, wordFactory, word)
 
 logger.updateLog("Hello")
 // wordCloud.updateCloud()
