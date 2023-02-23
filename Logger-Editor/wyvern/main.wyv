@@ -2,9 +2,15 @@ require java
 
 import fileSystem
 import logger
+import wordFactory
+import wordCloud
 
 val fs = fileSystem(java)
 val logFile = fs.fileFor("log.txt")
 val logger = logger(logFile)
+val word = wordFactory.create("temp")
+
+// val wordCloud = wordCloud(logger, word)
 
 logger.updateLog("Hello")
+// wordCloud.updateCloud()

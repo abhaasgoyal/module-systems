@@ -1,0 +1,8 @@
+module wordFactory: {} WordFactory
+
+type Word
+	val contents : String
+
+def create(s: String):Word
+	new
+		val contents = s

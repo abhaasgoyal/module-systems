@@ -1,0 +1,5 @@
+type WordFactory
+	type Word
+		val contents : String
+		
+	def create():this.Word
