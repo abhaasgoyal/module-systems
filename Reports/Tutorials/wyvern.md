@@ -110,7 +110,7 @@ We can abstract `Cell` in a module (the filename should match the module name by
 
 ## Functors
 
-Although modules are objects, they cannot contain any state (REVIEW: What's the problem here, since we can define everything through `new`?) and they cannot encapsulate system resources. To have this behaviour, we use `functors` - modules defined as a function
+  * Although modules are objects, they cannot contain any state within the top level code. To have this behaviour, we use `functors` (note: it can also be considered as syntactic sugar for the `new` keyword in the previous example having another type on top of it) - modules defined as a function
 
 
 - `cellAsModule.wyv`
@@ -166,6 +166,3 @@ val client = cellClientFunctor(cellAsModule())
 client.addOne()
 client.getValue() // evalutes to 1
 ```
-
-## Datatypes and Conversions
-TODO?
