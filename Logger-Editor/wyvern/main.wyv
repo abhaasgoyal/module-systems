@@ -13,4 +13,4 @@ val word = wordFactory.create("temp")
 val wordCloud = wordCloud(logger, wordFactory, word)
 
 logger.updateLog("Hello")
-// wordCloud.updateCloud()
+wordCloud.updateCloud()
