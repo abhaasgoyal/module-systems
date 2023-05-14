@@ -1,9 +1,3 @@
-//! A simple illustration of the `cap-std` API to stores data in a project's directory
-
-// Optional TODOs for refinement
-// TODO: Parse as command-line arguments for faster prototyping.
-// TODO: While creating logger, pass-in root folder?
-
 mod extension;
 mod logging;
 
@@ -22,6 +16,7 @@ fn main() -> anyhow::Result<()> {
     // Sample value for computation and writing to logger file
     let sample_word_counts = [1, 2, 3, 4, 5];
 
+    // Call to the following functions while ensuring the word count cannot access the underlying file structure
     w_cloud.log_total_count(&sample_word_counts)?;
     w_cloud.log_input(value)?;
 
