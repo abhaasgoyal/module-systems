@@ -9,7 +9,7 @@ val fs = fileSystem(java)
 val logFile = fs.fileFor("log.txt")
 val logger = logger(logFile)
 val word = wordFactory.create("temp")
-
+// Design a plugin having access to a logger without having access to the underlying fileSystem
 val wordCloud = wordCloud(logger, wordFactory, word)
 
 logger.updateLog("Hello")
