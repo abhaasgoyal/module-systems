@@ -1,0 +1,7 @@
+module def wordCloud(logger : Logger, wordFactory : WordFactory, word: wordFactory.Word): WordCloud
+
+def temp(): Int
+  3
+
+def updateCloud(): Unit
+  logger.updateLog(word.contents)

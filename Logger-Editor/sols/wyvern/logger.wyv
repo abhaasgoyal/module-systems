@@ -1,0 +1,5 @@
+module def logger(logFile: fileSystem.File): {} Logger
+def updateLog(msg: String): Unit
+  val logAppender = logFile.makeAppender()
+  logAppender.write(msg)
+  logAppender.close()
