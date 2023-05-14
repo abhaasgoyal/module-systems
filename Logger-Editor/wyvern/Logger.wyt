@@ -1,2 +1,0 @@
-resource type Logger
-  def append_to_log(msg: String): Unit
