@@ -4,4 +4,4 @@ def temp(): Int
   3
 
 def updateCloud(): Unit
-  logger.updateLog(word.contents)
+  logger.append_to_log(word.contents)

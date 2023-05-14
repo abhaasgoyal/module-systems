@@ -7,10 +7,8 @@ import wordCloud
 
 val fs = fileSystem(java)
 val logFile = fs.fileFor("log.txt")
-val logger = logger(logFile)
-val word = wordFactory.create("temp")
-// Design a plugin having access to a logger without having access to the underlying fileSystem
-val wordCloud = wordCloud(logger, wordFactory, word)
 
-logger.updateLog("Hello")
+// val logger = ?? (TODO: Design the logger object such as when passed to wordCloud, and the program is run in general it doesn't have access to the underlying fileSystem)
+val word = wordFactory.create("temp") // The entry that we want to write in the logFile
+val wordCloud = wordCloud(logger, wordFactory, word)
 wordCloud.updateCloud()
