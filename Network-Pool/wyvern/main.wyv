@@ -1,0 +1,11 @@
+require java
+require stdout
+
+import poolMaker
+import cloud
+
+val pool = poolMaker("192", "255", 192, 268)
+
+val cloudInstance = cloud(pool, stdout)
+
+cloudInstance.start()

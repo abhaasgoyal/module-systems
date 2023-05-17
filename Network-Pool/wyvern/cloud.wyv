@@ -1,0 +1,5 @@
+module def cloud(pool: PoolMaker, stdout: Stdout): Cloud
+
+def start(): Unit
+ val status = pool.connect("220", 200)
+ stdout.print(status)

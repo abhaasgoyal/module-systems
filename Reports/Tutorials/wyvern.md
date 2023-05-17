@@ -122,7 +122,7 @@ def set(newValue:Int):Unit
 def get():Int = value
 ```
 
-- Note that Wyvern does not allow implicitly shared global state, because this often causes problems in software development. So `cellAsModule` does not evaluate to an object, but rather a function that, when invoked, yields a fresh object with its own copy of the internal state dened by the module.
+- Note that Wyvern does not allow implicitly shared global state, because this often causes problems in software development. So `cellAsModule` does not evaluate to an object, but rather a function that, when invoked, yields a fresh object with its own copy of the internal state defined by the module.
 - Below is an example of using `cellAsModule` in a program
 ```
 import cellAsModule
