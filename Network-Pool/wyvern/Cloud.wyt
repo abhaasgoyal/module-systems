@@ -1,2 +1,2 @@
 resource type Cloud
-  def start(): Unit
+  def start(ip: String, port: Int): Unit

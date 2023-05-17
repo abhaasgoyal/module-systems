@@ -4,8 +4,16 @@ require stdout
 import poolMaker
 import cloud
 
-val pool = poolMaker("192", "255", 192, 268)
+val IP_ADDR = "93.184.216.14"
+val PORT = 80
 
-val cloudInstance = cloud(pool, stdout)
+// Create the capability pool instances
+val poolMakerIpAddr = poolMaker(IP_ADDR, IP_ADDR, 0, 65535)
+val cloudInstanceIp = cloud(poolMakerIpAddr, stdout)
 
-cloudInstance.start()
+val poolMakerSinglePort = poolMaker("93.184.216.0", "93.184.216.255", PORT, PORT)
+val cloudInstancePort = cloud(poolMakerSinglePort, stdout)
+
+// Perform operations that requires authorization from the respective pools
+cloudInstanceIp.start(IP_ADDR, PORT)
+cloudInstancePort.start(IP_ADDR, PORT)

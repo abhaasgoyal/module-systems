@@ -1,5 +1,5 @@
 module def cloud(pool: PoolMaker, stdout: Stdout): Cloud
 
-def start(): Unit
- val status = pool.connect("220", 200)
+def start(ip: String, port: Int): Unit
+ val status = pool.connect(ip, port)
  stdout.print(status)
