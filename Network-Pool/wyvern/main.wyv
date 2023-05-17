@@ -7,13 +7,9 @@ import cloud
 val IP_ADDR = "93.184.216.14"
 val PORT = 80
 
-// Create the capability pool instances
-val poolMakerIpAddr = poolMaker(IP_ADDR, IP_ADDR, 0, 65535)
-val cloudInstanceIp = cloud(poolMakerIpAddr, stdout)
+// TODO: Create the capability pool instances
+// val poolMakerIpAddr = poolMaker(IP_ADDR, IP_ADDR, 0, 65535)
 
-val poolMakerSinglePort = poolMaker("93.184.216.0", "93.184.216.255", PORT, PORT)
-val cloudInstancePort = cloud(poolMakerSinglePort, stdout)
+// val poolMakerSinglePort = poolMaker("93.184.216.0", "93.184.216.255", PORT, PORT)
 
-// Perform operations that requires authorization from the respective pools
-cloudInstanceIp.start(IP_ADDR, PORT)
-cloudInstancePort.start(IP_ADDR, PORT)
+// TODO: Perform operations that requires authorization from the respective pools

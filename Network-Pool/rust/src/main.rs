@@ -10,8 +10,6 @@ fn main() -> io::Result<()> {
     let net_pool = pool_auth::create_net_port();
 
     // TODO: Perform operations that requires authorization from the respective pools
-    let _ = pool_ext(&tcp_pool);
-    let _ = pool_ext(&net_pool);
 
     Ok(())
 }
