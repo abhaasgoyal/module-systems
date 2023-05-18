@@ -1,70 +1,7 @@
-use std::collections::HashMap;
+mod sealerUnsealer;
+// use sealerUnsealer::{Sealer, SealedObject, Unsealer};
 
-trait SealedObject {
-    fn perform_operation(&self);
-}
-
-// Creates capability to access a specific object
-struct Sealer {
-    objects: HashMap<String, Box<dyn SealedObject>>,
-}
-
-impl Sealer {
-    fn new() -> Sealer {
-        Sealer {
-            objects: HashMap::new(),
-        }
-    }
-
-    fn seal_object(&mut self, obj: Box<dyn SealedObject>) -> String {
-        // Generate a unique token to use as the capability using PRNG
-        let token = generate_unique_token();
-
-        // Store the object and associated token
-        self.objects.insert(token.clone(), obj);
-
-        // Return the token as the capability
-        token
-    }
-}
-
-struct Unsealer<'a> {
-    objects: &'a HashMap<String, Box<dyn SealedObject>>,
-}
-
-impl<'a> Unsealer<'a> {
-    fn new(sealer: &'a Sealer) -> Unsealer<'a> {
-        Unsealer {
-            objects: &sealer.objects,
-        }
-    }
-
-    // Check capabilities and returns the sealed object
-    fn unseal_object(&self, capability: &str) -> Option<&Box<dyn SealedObject>> {
-        // Check that the capability is valid and exists in HashMap
-        self.objects.get(capability)
-    }
-}
-
-// Define a struct that implements the SealedObject trait
 /*
-struct MyObject {
-    value: i32,
-}
-
-impl SealedObject for MyObject {
-    fn perform_operation(&self) {
-        println!("MyObject: {}", self.value);
-    }
-}
-*/
-
-// Helper function to generate a unique token
-fn generate_unique_token() -> String {
-    // TODO: Implement PRNG
-    String::from("12345")
-}
-
 struct Money {
     amount: u64,
 }
@@ -77,6 +14,7 @@ impl SealedObject for Money {
 
 struct Mint {
     sealer: Sealer,
+
 }
 
 impl Mint {
@@ -156,8 +94,9 @@ impl Purse {
         self.balance
     }
 }
-
+*/
 fn main() {
+    /*
     let mut mint = Mint::new();
     let mint2 = Mint::new();
     let capability = mint.create_money(1000);
@@ -170,6 +109,7 @@ fn main() {
     purse.get_balance();
     purse.withdraw(200, &unsealer);
     purse.withdraw(200, &unsealer2);
+    */
     /*
     // Create a sealed object
     let obj = Box::new(MyObject { value: 42 });
