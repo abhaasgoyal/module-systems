@@ -1,130 +1,160 @@
 mod sealerUnsealer;
-// use sealerUnsealer::{Sealer, SealedObject, Unsealer};
-
 /*
-struct Money {
-    amount: u64,
-}
+let mut mint = Mint::new();
+let mint2 = Mint::new();
+let capability = mint.create_money(1000);
 
-impl SealedObject for Money {
-    fn perform_operation(&self) {
-        println!("Money: {}", self.amount);
-    }
-}
+let unsealer = Unsealer::new(&mint.sealer);
+let unsealer2 = Unsealer::new(&mint2.sealer);
+let mut purse = Purse::new(capability);
 
-struct Mint {
-    sealer: Sealer,
+purse.sprout(500, &unsealer);
+purse.get_balance();
+purse.withdraw(200, &unsealer);
+purse.withdraw(200, &unsealer2);
+*/
+/*
+// Create a sealed object
+let obj = Box::new(MyObject { value: 42 });
 
-}
+// Seal the object and get a capability
+let mut sealer = Sealer::new();
+let capability = sealer.seal_object(obj);
 
-impl Mint {
-    fn new() -> Mint {
-        Mint {
-            sealer: Sealer::new(),
-        }
-    }
+// REVIEW: Pass the capability to another part of the system
 
-    fn create_money(&mut self, amount: u64) -> String {
-        let money = Money { amount };
-        let sealed_money = Box::new(money);
-        self.sealer.seal_object(sealed_money)
-    }
-}
-
-struct Purse {
-    capability: String,
-    balance: u64,
-}
-
-impl Purse {
-    fn new(capability: String) -> Purse {
-        Purse {
-            capability,
-            balance: 0,
-        }
-    }
-
-    fn sprout(&mut self, amount: u64, unsealer: &Unsealer) {
-        // type is Dyn so could be broken
-        match unsealer.unseal_object(&self.capability) {
-            Some(obj) => {
-                obj.perform_operation(); // Access the sealed object
-                self.balance += amount;
-                println!("Sprouting {} into the purse.", amount);
-            }
-            None => println!("Error: Invalid capability"),
-        }
-    }
-
-    fn withdraw(&mut self, amount: u64, unsealer: &Unsealer) {
-        match unsealer.unseal_object(&self.capability) {
-            Some(obj) => {
-                obj.perform_operation(); // Access the sealed object
-                if self.balance >= amount {
-                    self.balance -= amount;
-                    println!("Withdrawing {} from the purse.", amount);
-                } else {
-                    println!("Error: Insufficient funds in the purse");
-                }
-            }
-            None => println!("Error: Invalid capability"),
-        }
-    }
-
-
-    /*
-    fn deposit(&mut self, amount: u64, source_purse: &Purse, unsealer: &Unsealer) {
-        match unsealer.unseal_object(&source_purse.capability) {
-            Some(obj) => {
-                obj.perform_operation(); // Access the sealed object
-                if source_purse.balance >= amount {
-                    source_purse.balance -= amount;
-                    self.balance += amount;
-                    println!("Depositing {} from the source purse.", amount);
-                } else {
-                    println!("Error: Insufficient funds in the source purse");
-                }
-            }
-            None => println!("Error: Invalid capability for the source purse"),
-        }
-    }
-    */
-
-    fn get_balance(&self) -> u64 {
-        self.balance
-    }
+// Unseal the object using the capability
+let unsealer = Unsealer::new(&sealer);
+match unsealer.unseal_object(&capability) {
+    Some(obj) => obj.perform_operation(),
+    None => println!("Error: Invalid capability"),
 }
 */
-fn main() {
-    /*
-    let mut mint = Mint::new();
-    let mint2 = Mint::new();
-    let capability = mint.create_money(1000);
+mod sealing;
+use sealing::{SealedBox, Sealer, Unsealer, mk_brand_pair};
 
-    let unsealer = Unsealer::new(&mint.sealer);
-    let unsealer2 = Unsealer::new(&mint2.sealer);
-    let mut purse = Purse::new(capability);
+#[cfg(test)]
+mod sealing_tests {
+    use super::sealing::*;
 
-    purse.sprout(500, &unsealer);
-    purse.get_balance();
-    purse.withdraw(200, &unsealer);
-    purse.withdraw(200, &unsealer2);
-    */
-    /*
-    // Create a sealed object
-    let obj = Box::new(MyObject { value: 42 });
-
-    // Seal the object and get a capability
-    let mut sealer = Sealer::new();
-    let capability = sealer.seal_object(obj);
-
-    // REVIEW: Pass the capability to another part of the system
-
-    // Unseal the object using the capability
-    let unsealer = Unsealer::new(&sealer);
-    match unsealer.unseal_object(&capability) {
-        Some(obj) => obj.perform_operation(),
-        None => println!("Error: Invalid capability"),
+    #[test]
+    fn simple_sealing() {
+        let (s, u) = mk_brand_pair("bob".to_string());
+        let sekret = 42;
+        match u.unseal(s.seal(sekret)) {
+            Some(_) => (),
+            None => panic!("Unsealing failed"),
+        }
     }
-    */
+}
+
+
+type Decr = Box<dyn FnMut(i32)>;
+
+pub trait Purse {
+    fn get_balance(&self) -> i32;
+    // fn sprout(&self) -> Box<dyn Purse>;
+    // fn get_decr(&self) -> Box<SealedBox<Decr>>;
+    // fn deposit(&self, amount: i32, src: &dyn Purse);
+}
+
+struct PurseImpl {
+    balance_slot: Box<i32>,
+    // decr: Decr,
+}
+
+pub trait Mint {
+    fn make_purse(&self, balance: i32) -> Box<dyn Purse>;
+    // fn sprout(&self) -> Box<dyn Purse>
+}
+
+struct MintImpl {
+    name: String,
+    sealer: Box<dyn Sealer<Decr>>,
+    unsealer: Box<dyn Unsealer<Decr>>,
+}
+
+impl Purse for PurseImpl {
+    fn get_balance(&self) -> i32 {
+        *self.balance_slot
+    }
+
+    // fn sprout(&self) -> Box<dyn Purse> {
+    //     self.mint.make_purse(0)
+    // }
+    // fn get_decr(&self) -> Box<SealedBox<Decr>> {
+    //     self.mint.sealer.seal(self.decr.clone())
+    // }
+
+    // fn deposit(&self, amount: i32, src: &dyn Purse) {
+    //     assert!(amount > 0);
+    //     match self.mint.unsealer.unseal(src.get_decr()) {
+    //         Some(d) => d(amount),
+    //         None => panic!("Unsealing failed"),
+    //     }
+    // }
+}
+
+impl Mint for MintImpl {
+    fn make_purse(&self, balance: i32) -> Box<dyn Purse> {
+        assert!(balance >= 0);
+
+        let mut bslot: Box<i32> = Box::new(balance);
+        // let decr = Box::new(move |amt: i32| {
+        //     assert!(amt <= *bslot); // or use Result type?
+        //     *bslot -= amt;
+        // }) as Decr;
+        Box::new(PurseImpl {
+            balance_slot: bslot,
+            // decr,
+        })
+    }
+}
+
+pub fn make_mint(name: String) -> Box<dyn Mint> {
+    let (sealer, unsealer) = mk_brand_pair(name.clone());
+    Box::new(MintImpl {
+        name,
+        sealer,
+        unsealer,
+    })
+}
+
+
+
+// #[cfg(test)]
+// mod money_tests {
+//     use super::mint::*;
+
+//     #[test]
+//     fn ode() {
+//         let carol_mint = make_mint("Carol".to_string());
+
+//         let alice_main_purse = carol_mint.make_purse(1000);
+//         assert_eq!(alice_main_purse.get_balance(), 1000);
+
+//         let bob_main_purse = carol_mint.make_purse(0);
+//         assert_eq!(bob_main_purse.get_balance(), 0);
+
+//         bob_main_purse.deposit(10, &*alice_main_purse);
+//         assert_eq!(bob_main_purse.get_balance(), 10);
+//         assert_eq!(alice_main_purse.get_balance(), 990);
+//     }
+
+//     #[test]
+//     #[should_panic]
+//     fn illegal_balance() {
+//         let carol_mint = make_mint("Carol".to_string());
+
+//         let _bad1 = carol_mint.make_purse(-5);
+//     }
+// }
+
+fn main() {
+    // let (s, u) = sealing::mk_brand_pair("bob".to_string()); //
+    // let sekret = 42;
+    // match u.unseal(s.seal(sekret)) {
+    //     Some(i) => println!("seal, unseal: {:?}", i),
+    //     None => println!("lose!"),
+    // }
 }
