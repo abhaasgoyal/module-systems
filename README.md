@@ -12,4 +12,4 @@ The studies are as follows:
 
 1. [Logger Editor](Study/Logger-Editor)
 2. [Network Pool](Study/Network-Pool)
-3. [Simple Money](Study/Sealer-Unsealer)
+3. [Simple Money](Study/Simple-Money)

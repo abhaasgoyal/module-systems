@@ -1,6 +1,6 @@
 # Simple Money
 
-![simpleMoney](/static/simpleMoney.jpg)
+![Simple Money](/images/simpleMoney.jpg)
 
 ## Background
 

@@ -1,6 +1,6 @@
 # Logger Editor
 
-![Logger Editor](/static/logger.jpg)
+![Logger Editor](/images/logger.jpg)
 
 ## Rust and Wyvern
 ### Step 1 (~30 mins)

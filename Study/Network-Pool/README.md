@@ -1,6 +1,6 @@
 # Network Pool
 
-![](/static/network.jpg)
+![Network Pool](/images/network.jpg)
 
 ## Rust and Wyvern
 ### Step 1 (~30 mins)
