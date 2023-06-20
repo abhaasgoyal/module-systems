@@ -63,6 +63,8 @@ fn make_brand_pair<'a, T>(nickname: T) -> (Sealer<'a, T>, Unsealer<'a, T>) {
     (sealer, unsealer)
 }
 
+// TODO: Implement Mint and Purse
+
 fn main() {
     let (sealer, unsealer) = make_brand_pair("nickname".to_string());
     let obj = "42".to_string();
