@@ -1,0 +1,7 @@
+module def poolMaker(startIp: String, endIp: String, startPort: Int, endPort: Int): PoolMaker
+
+def connect(ip: String, port: Int): String
+ ( (ip >= startIp && ip <= endIp) && (port >= startPort && port <= endPort)).ifTrue (
+    () => "Successful",
+    () => "Unsuccessful"
+ )

@@ -1,0 +1,3 @@
+resource type PoolMaker
+  def connect(ip: String, port: Int): String
+
