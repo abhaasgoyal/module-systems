@@ -1,69 +1,66 @@
-use std::cell::RefCell;
-use std::rc::Rc;
+mod sealerUnsealer;
 
-struct BrandPair<'a, T> {
-    shared: Rc<RefCell<Option<T>>>,
-    lifetime: std::marker::PhantomData<&'a T>,
+mod sealing;
+use sealing::{SealedBox, Sealer, Unsealer, mk_brand_pair};
+
+type Decr = Box<dyn FnMut(i32)>;
+
+// Mint Object
+pub trait Mint {
+    fn make_purse(&self, balance: i32) -> Box<dyn Purse>;
+    fn sprout(&self) -> Box<dyn Purse>
 }
 
-impl<'a, T> BrandPair<'a, T> {
-    fn make_sealed_box(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
-        let shared_clone = Rc::clone(&self.shared);
-        Box::new(move || {
-            *shared_clone.borrow_mut() = Some(obj);
+struct MintImpl {
+    name: String,
+    sealer: Box<dyn Sealer<Decr>>,
+    unsealer: Box<dyn Unsealer<Decr>>,
+}
+
+impl Mint for MintImpl {
+    fn make_purse(&self, balance: i32) -> Box<dyn Purse> {
+        assert!(balance >= 0);
+
+        let mut bslot: Box<i32> = Box::new(balance);
+        let decr = Box::new(move |amt: i32| {
+            assert!(amt <= *bslot); // or use Result type?
+            *bslot -= amt;
+        }) as Decr;
+        Box::new(PurseImpl {
+            balance_slot: bslot,
+            decr,
         })
     }
 }
 
-struct Sealer<'a, T> {
-    shared: Rc<RefCell<Option<T>>>,
-    lifetime: std::marker::PhantomData<&'a T>,
+pub fn make_mint(name: String) -> Box<dyn Mint> {
+    let (sealer, unsealer) = mk_brand_pair(name.clone());
+    Box::new(MintImpl {
+        name,
+        sealer,
+        unsealer,
+    })
 }
 
-impl<'a, T> Sealer<'a, T> {
-    fn seal(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
-        let shared_clone = Rc::clone(&self.shared);
-        Box::new(move || {
-            *shared_clone.borrow_mut() = Some(obj);
-        })
-    }
+
+// Purse Object
+pub trait Purse {
+    fn get_balance(&self) -> i32;
+    fn sprout(&self) -> Box<dyn Purse>;
+    fn get_decr(&self) -> Box<SealedBox<Decr>>;
+    fn deposit(&self, amount: i32, src: &dyn Purse);
 }
 
-struct Unsealer<'a, T> {
-    shared: Rc<RefCell<Option<T>>>,
-    lifetime: std::marker::PhantomData<&'a T>,
+struct PurseImpl {
+    balance_slot: Box<i32>,
+    decr: Decr,
 }
 
-impl<'a, T> Unsealer<'a, T> {
-    fn unseal(&self, box_fn: Box<dyn FnOnce() -> () + 'a>) -> Result<T, &'static str> {
-        *self.shared.borrow_mut() = None;
-        box_fn();
-        let contents = self.shared.borrow_mut().take();
-        match contents {
-            Some(value) => Ok(value),
-            None => Err("invalid box"),
-        }
-    }
+
+impl Purse for PurseImpl {
+    // TODO
 }
 
-fn make_brand_pair<'a, T>(nickname: T) -> (Sealer<'a, T>, Unsealer<'a, T>) {
-    let shared = Rc::new(RefCell::new(None));
-    let brand_pair = BrandPair {
-        shared: Rc::clone(&shared),
-        lifetime: std::marker::PhantomData,
-    };
-    let sealer = Sealer {
-        shared: Rc::clone(&shared),
-        lifetime: std::marker::PhantomData,
-    };
-    let unsealer = Unsealer {
-        shared: Rc::clone(&shared),
-        lifetime: std::marker::PhantomData,
-    };
-    (sealer, unsealer)
-}
-
-// TODO: Implement Mint and Purse
 
 fn main() {
     let (sealer, unsealer) = make_brand_pair("nickname".to_string());
