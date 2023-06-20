@@ -91,10 +91,12 @@ pub fn make_mint(name: String) -> Box<dyn Mint> {
 }
 
 fn main() {
-    let (s, u) = sealing::mk_brand_pair("bob".to_string()); //
-    let sekret = 42;
-    match u.unseal(s.seal(sekret)) {
-        Some(i) => println!("seal, unseal: {:?}", i),
-        None => println!("lose!"),
+    let (sealer, unsealer) = make_brand_pair("nickname".to_string());
+    let obj = "42".to_string();
+    let box_fn = sealer.seal(obj.clone());
+    let result = unsealer.unseal(box_fn);
+    match result {
+        Ok(contents) => println!("Contents: {}", contents),
+        Err(error) => println!("Error: {}", error),
     }
 }

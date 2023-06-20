@@ -1,61 +1,64 @@
-use std::option::Option;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-struct SealedBox<T> {
-    shared: Option<T>,
+struct BrandPair<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
 }
 
-impl<T> SealedBox<T> {
-    fn share_content(&mut self, object: Option<T>) {
-        self.shared = object;
+impl<'a, T> BrandPair<'a, T> {
+    fn make_sealed_box(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
+        let shared_clone = Rc::clone(&self.shared);
+        Box::new(move || {
+            *shared_clone.borrow_mut() = Some(obj);
+        })
     }
 }
 
-struct BrandSealer<T> {
-    shared: Option<T>
+struct Sealer<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
 }
 
-impl<T> BrandSealer<T> {
-    fn seal(&self, object: Option<T>) -> SealedBox<T> {
-        let mut sealed_box = SealedBox { shared: None };
-        sealed_box.share_content(object);
-        sealed_box
+impl<'a, T> Sealer<'a, T> {
+    fn seal(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
+        let shared_clone = Rc::clone(&self.shared);
+        Box::new(move || {
+            *shared_clone.borrow_mut() = Some(obj);
+        })
     }
 }
 
-struct BrandUnsealer<T> {
-    shared: Option<T>
+struct Unsealer<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
 }
 
-impl<T> BrandUnsealer<T> {
-    fn unseal(&self, mut sealed_box: SealedBox<T>) -> Option<T> {
-        let shared = None;
-        let mut result = None;
-        sealed_box.share_content(shared);
-        result
+impl<'a, T> Unsealer<'a, T> {
+    fn unseal(&self, box_fn: Box<dyn FnOnce() -> () + 'a>) -> Result<T, &'static str> {
+        *self.shared.borrow_mut() = None;
+        box_fn();
+        let contents = self.shared.borrow_mut().take();
+        match contents {
+            Some(value) => Ok(value),
+            None => Err("invalid box"),
+        }
     }
 }
 
-struct BrandPair<T> {
-    name: String,
-    sealer: BrandSealer<T>,
-    unsealer: BrandUnsealer<T>,
-}
-
-impl<T> BrandPair<T> {
-    fn make_sealed_box(&self, object: Option<T>) -> SealedBox<T> {
-        let mut sealed_box = SealedBox { shared: None };
-        sealed_box.share_content(object);
-        sealed_box
-    }
-}
-
-fn make_brand_pair<T>(name: String) -> BrandPair<T> {
-    let sealer = BrandSealer { shared: None};
-    let unsealer = BrandUnsealer { shared: None};
-
-    BrandPair {
-        name,
-        sealer,
-        unsealer,
-    }
+fn make_brand_pair<'a, T>(nickname: T) -> (Sealer<'a, T>, Unsealer<'a, T>) {
+    let shared = Rc::new(RefCell::new(None));
+    let brand_pair = BrandPair {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    let sealer = Sealer {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    let unsealer = Unsealer {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    (sealer, unsealer)
 }
