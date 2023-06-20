@@ -92,5 +92,4 @@ Please provide your ratings out of 5 on the following:
 4. How much do you think you understand the concept of capabilities?
 
 **Subjective questions**:
-Is there a part of the language / task design which the participant would want to be improved?  
-Shuffle the order of languages
+Is there a part of the language / task design which the participant would want to be improved?
