@@ -126,6 +126,7 @@ def makeMint(name:String):Mint
         def print():Unit
             stdout.print("Mint named " + brandPair.name + "\n")
 
+// Tests
 var carolMint:Mint = makeMint("Carol")
 carolMint.print()
 

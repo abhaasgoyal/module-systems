@@ -1,160 +1,75 @@
-mod sealerUnsealer;
-/*
-let mut mint = Mint::new();
-let mint2 = Mint::new();
-let capability = mint.create_money(1000);
+use std::cell::RefCell;
+use std::rc::Rc;
 
-let unsealer = Unsealer::new(&mint.sealer);
-let unsealer2 = Unsealer::new(&mint2.sealer);
-let mut purse = Purse::new(capability);
-
-purse.sprout(500, &unsealer);
-purse.get_balance();
-purse.withdraw(200, &unsealer);
-purse.withdraw(200, &unsealer2);
-*/
-/*
-// Create a sealed object
-let obj = Box::new(MyObject { value: 42 });
-
-// Seal the object and get a capability
-let mut sealer = Sealer::new();
-let capability = sealer.seal_object(obj);
-
-// REVIEW: Pass the capability to another part of the system
-
-// Unseal the object using the capability
-let unsealer = Unsealer::new(&sealer);
-match unsealer.unseal_object(&capability) {
-    Some(obj) => obj.perform_operation(),
-    None => println!("Error: Invalid capability"),
-}
-*/
-mod sealing;
-use sealing::{SealedBox, Sealer, Unsealer, mk_brand_pair};
-
-#[cfg(test)]
-mod sealing_tests {
-    use super::sealing::*;
-
-    #[test]
-    fn simple_sealing() {
-        let (s, u) = mk_brand_pair("bob".to_string());
-        let sekret = 42;
-        match u.unseal(s.seal(sekret)) {
-            Some(_) => (),
-            None => panic!("Unsealing failed"),
-        }
-    }
+struct BrandPair<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
 }
 
-
-type Decr = Box<dyn FnMut(i32)>;
-
-pub trait Purse {
-    fn get_balance(&self) -> i32;
-    // fn sprout(&self) -> Box<dyn Purse>;
-    // fn get_decr(&self) -> Box<SealedBox<Decr>>;
-    // fn deposit(&self, amount: i32, src: &dyn Purse);
-}
-
-struct PurseImpl {
-    balance_slot: Box<i32>,
-    // decr: Decr,
-}
-
-pub trait Mint {
-    fn make_purse(&self, balance: i32) -> Box<dyn Purse>;
-    // fn sprout(&self) -> Box<dyn Purse>
-}
-
-struct MintImpl {
-    name: String,
-    sealer: Box<dyn Sealer<Decr>>,
-    unsealer: Box<dyn Unsealer<Decr>>,
-}
-
-impl Purse for PurseImpl {
-    fn get_balance(&self) -> i32 {
-        *self.balance_slot
-    }
-
-    // fn sprout(&self) -> Box<dyn Purse> {
-    //     self.mint.make_purse(0)
-    // }
-    // fn get_decr(&self) -> Box<SealedBox<Decr>> {
-    //     self.mint.sealer.seal(self.decr.clone())
-    // }
-
-    // fn deposit(&self, amount: i32, src: &dyn Purse) {
-    //     assert!(amount > 0);
-    //     match self.mint.unsealer.unseal(src.get_decr()) {
-    //         Some(d) => d(amount),
-    //         None => panic!("Unsealing failed"),
-    //     }
-    // }
-}
-
-impl Mint for MintImpl {
-    fn make_purse(&self, balance: i32) -> Box<dyn Purse> {
-        assert!(balance >= 0);
-
-        let mut bslot: Box<i32> = Box::new(balance);
-        // let decr = Box::new(move |amt: i32| {
-        //     assert!(amt <= *bslot); // or use Result type?
-        //     *bslot -= amt;
-        // }) as Decr;
-        Box::new(PurseImpl {
-            balance_slot: bslot,
-            // decr,
+impl<'a, T> BrandPair<'a, T> {
+    fn make_sealed_box(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
+        let shared_clone = Rc::clone(&self.shared);
+        Box::new(move || {
+            *shared_clone.borrow_mut() = Some(obj);
         })
     }
 }
 
-pub fn make_mint(name: String) -> Box<dyn Mint> {
-    let (sealer, unsealer) = mk_brand_pair(name.clone());
-    Box::new(MintImpl {
-        name,
-        sealer,
-        unsealer,
-    })
+struct Sealer<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
 }
 
+impl<'a, T> Sealer<'a, T> {
+    fn seal(&self, obj: T) -> Box<dyn FnOnce() -> () + 'a> {
+        let shared_clone = Rc::clone(&self.shared);
+        Box::new(move || {
+            *shared_clone.borrow_mut() = Some(obj);
+        })
+    }
+}
 
+struct Unsealer<'a, T> {
+    shared: Rc<RefCell<Option<T>>>,
+    lifetime: std::marker::PhantomData<&'a T>,
+}
 
-// #[cfg(test)]
-// mod money_tests {
-//     use super::mint::*;
+impl<'a, T> Unsealer<'a, T> {
+    fn unseal(&self, box_fn: Box<dyn FnOnce() -> () + 'a>) -> Result<T, &'static str> {
+        *self.shared.borrow_mut() = None;
+        box_fn();
+        let contents = self.shared.borrow_mut().take();
+        match contents {
+            Some(value) => Ok(value),
+            None => Err("invalid box"),
+        }
+    }
+}
 
-//     #[test]
-//     fn ode() {
-//         let carol_mint = make_mint("Carol".to_string());
-
-//         let alice_main_purse = carol_mint.make_purse(1000);
-//         assert_eq!(alice_main_purse.get_balance(), 1000);
-
-//         let bob_main_purse = carol_mint.make_purse(0);
-//         assert_eq!(bob_main_purse.get_balance(), 0);
-
-//         bob_main_purse.deposit(10, &*alice_main_purse);
-//         assert_eq!(bob_main_purse.get_balance(), 10);
-//         assert_eq!(alice_main_purse.get_balance(), 990);
-//     }
-
-//     #[test]
-//     #[should_panic]
-//     fn illegal_balance() {
-//         let carol_mint = make_mint("Carol".to_string());
-
-//         let _bad1 = carol_mint.make_purse(-5);
-//     }
-// }
+fn make_brand_pair<'a, T>(nickname: T) -> (Sealer<'a, T>, Unsealer<'a, T>) {
+    let shared = Rc::new(RefCell::new(None));
+    let brand_pair = BrandPair {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    let sealer = Sealer {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    let unsealer = Unsealer {
+        shared: Rc::clone(&shared),
+        lifetime: std::marker::PhantomData,
+    };
+    (sealer, unsealer)
+}
 
 fn main() {
-    // let (s, u) = sealing::mk_brand_pair("bob".to_string()); //
-    // let sekret = 42;
-    // match u.unseal(s.seal(sekret)) {
-    //     Some(i) => println!("seal, unseal: {:?}", i),
-    //     None => println!("lose!"),
-    // }
+    let (sealer, unsealer) = make_brand_pair("nickname".to_string());
+    let obj = "42".to_string();
+    let box_fn = sealer.seal(obj.clone());
+    let result = unsealer.unseal(box_fn);
+    match result {
+        Ok(contents) => println!("Contents: {}", contents),
+        Err(error) => println!("Error: {}", error),
+    }
 }
