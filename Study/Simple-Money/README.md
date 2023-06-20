@@ -2,6 +2,10 @@
 
 ## Purpose
 
+Ease of developing appropriate implementations from the specification. A high degree of freedom should be provided in how to design programs
+
+## Goal
+
 Given a money minter and two purses A and B, design a transaction where user A can securely send money to user B, using the capability pattern of sealer-unsealer. 
 
 ## Architecture
@@ -11,7 +15,7 @@ Given a money minter and two purses A and B, design a transaction where user A c
 
 The architecture (consisted of the main entity `mintMaker`, making the `Mint` Object, representing a new currency. It has a fixed amount of total balance. It employs the Factory Pattern to further create two `Purse` objects, Alice and Bob, which it can initialize with a certain balance. This is implemented in steps (1)-(2). Now, the question is whether Alice can pay some of its money to Bob while conserving the total currency. Some of the goals the architecture needs to achieve \citep{millerFinancial} are:
 
- 1. Only someone with the mint has the power to change the total balance of that currency
+ 1. (T1) Only someone with the mint has the power to change the total balance of that currency
  2. (T2) `Purse A` cannot change the balance of `Purse B`
  3. (T3) Balances should always be positive
  4. (T4) If a successful deposit gets reported, Alice should be guaranteed that the deposit was conducted in the other wallet
