@@ -16,6 +16,6 @@ The studies are as follows:
 
 ## Repository Structure
 
-- `Reports/` contain the necessary paperwork and research before/during conducting the study.
-- `Study/` contains each of the study designs. The initital templates for the respective langagues are in the respective subfolders, with solutions being in `sols/`
-- `images/` contain static data for hosting the content in documentation.
+- `Reports/` - the necessary paperwork and research before/during conducting the study.
+- `Study/` - contains each of the study designs. The initital templates for the respective langagues are in the respective subfolders, with solutions being in `sols/`
+- `images/` - static data for hosting the content in documentation.
