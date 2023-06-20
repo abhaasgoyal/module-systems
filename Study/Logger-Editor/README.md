@@ -1,3 +1,3 @@
 # Logger Editor
 
-[[/static/logger.jpg]]
+![Logger Editor](/static/logger.jpg])
