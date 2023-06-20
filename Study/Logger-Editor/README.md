@@ -27,7 +27,7 @@ The logger should contain the functionalities for the following (note that one c
 **Rust**
 Given a template `extension.rs`, `main.rs`  file [1] - design the corresponding Logger module with capability library in Rust ([2], [3])
 
-A potential template is given as follows:
+A potential template is given in `logger.rs`:
 
 ```rust
 /* Some imports the user may / may not need */
@@ -61,7 +61,7 @@ The following documentation may be useful
 
 **Wyvern**
 
-For Wyvern, the extension library is `wordCloud`, and you have to design the logger library. Since capability security is inbuilt you are given more freedom as to how to call the logger library from the main function.
+For Wyvern, the extension library is `wordCloud`, and you have to design the logger library. Since capability security is inbuilt you are given more freedom as to how to call the logger library from the main function. Provided below is the overall structure of the `Main` module
 
 ```rust
 import fileSystem
