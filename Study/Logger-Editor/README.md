@@ -61,7 +61,7 @@ The following documentation may be useful
 
 **Wyvern**
 
-For Wyvern, the extension library is `wordCloud`, and you have to design the logger library. Since capability security is inbuilt you are given more freedom as to how to call the logger library from the main function. Provided below is the overall structure of the `Main` module
+The extension library is `wordCloud`, and the users need to design the logger library from scratch with the `appendLog` function. Since capability is built hierarchically here, the users were given a more open-ended specification to the parameters of the logger library (the answer here is that using the underlying system resource is exclusively dependent that Main passes `fileIO` from the main function. 
 
 ```rust
 import fileSystem
@@ -77,6 +77,8 @@ val word = wordFactory.create("temp")
 val wordCloud = wordCloud(logger, wordFactory, word)
 wordCloud.updateCloud()
 ```
+
+The documentation for Wyvern's fileSystem was provided as standard IO library, hoping that it will act as self-documenting code since no developer-friendly documentation exists for the library. The required method definitions for `fileIO` is provided as `fileIO.wyv` in wyvern's stdlib.
 
 ### Step 2 (~20 mins)
 
