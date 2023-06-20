@@ -1,23 +1,33 @@
 # Logger Editor
 
+## Purpose
+Checking the security of built libraries by ensuring authority is non-transitive in designs.
+
+## Background
+
 ![Logger Editor](/images/logger.jpg)
 
-## Rust and Wyvern
+In figure above, the `Main` application has a `Logger` module that it can trust. The logger module has access to `FileIO`, providing it the authority to read/write to files. However, there also exists an extension named `wordCloud` module, which needs to utilize the `Logger` library to read/write to a place that only `Logger` can allow. Here, `Main` passes `Logger` as a when creating `wordCloud`. The goal of the user is to design `Logger` in such a way that `WordExt` does not have access to the underlying module `fileIO` and, in the process, escalate its privilege.
+
 ### Step 1 (~30 mins)
 
-Requirements for the logger library:
-The name of the log file should be log.txt
-Location for the log file 
-Rust - should be in $DATA_DIR (capability library provides better support for that)
-Wyvern - should be in the same folder as the program
+The following requirements need to be satisfied when designing the logger architecture for specific languages:
+
+
+1. The name of the log file should be `log.txt`
+2. The directory containing the file would depend on the language as follows:
+   - **Rust** - should be in `$DATA_DIR` (since Rust's capability library provides inbuilt support for writing directly to that folder)
+   - **Wyvern** - should be in the same folder as the program
+
 The logger should contain the functionalities for the following (note that one can change the function names:
-create_logger(logFile : String) - A constructor which returns a new logger object with the name logFile
-append_to_log(entry : String) - Append a new entry to the logFile
 
-Rust
-Given a template extension.rs, main.rs  file [1] - design the corresponding Logger module with capability library in Rust ([2], [3])
+- `create_logger(logFile : String)` - A constructor which returns a new logger object with the name logFile
+- `append_to_log(entry : String)` - Append a new entry to the logFile
 
-A potential template is given as follows:
+**Rust**
+Given a template `extension.rs`, `main.rs`  file [1] - design the corresponding Logger module with capability library in Rust ([2], [3])
+
+A potential template is given in `logger.rs`:
 
 ```rust
 /* Some imports the user may / may not need */
@@ -44,12 +54,14 @@ impl Logger {
 The following documentation may be useful
 
 [1] https://docs.rs/cap-std/0.26.1/cap_std/
+
 [2] https://docs.rs/cap-directories/0.26.1/cap_directories/
+
 [3] https://doc.rust-lang.org/std/
 
-Wyvern
+**Wyvern**
 
-For Wyvern, the extension library is wordCloud, and you have to design the logger library. Since capability security is inbuilt you are given more freedom as to how to call the logger library from the main function.
+For Wyvern, the extension library is `wordCloud`, and you have to design the logger library. Since capability security is inbuilt you are given more freedom as to how to call the logger library from the main function. Provided below is the overall structure of the `Main` module
 
 ```rust
 import fileSystem
@@ -80,5 +92,4 @@ Please provide your ratings out of 5 on the following:
 4. How much do you think you understand the concept of capabilities?
 
 **Subjective questions**:
-Is there a part of the language / task design which the participant would want to be improved?  
-Shuffle the order of languages
+Is there a part of the language / task design which the participant would want to be improved?

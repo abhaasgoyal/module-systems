@@ -39,4 +39,19 @@ bobPurse.deposit(10, paymentEnvelope) // Assumption that Alice has access to the
 ... // Checks for correct balances
 ```
 
+### Step 1 and Step 2 (~50 mins)
+
 Instructions were the same for Wyvern and Rust implementation, with slightly different filenames. They were to implement the architecture above and then come up with potential vulnerabilities in their implementation. Existing boilerplate code and the todo list for implementing the function are provided in the code
+
+
+### Step 3 (~10 mins)
+
+Please provide your ratings out of 5 on the following:
+
+1. How useful do you think capabilities are?
+2. How much did you like working on Wyvern?
+3. How much did you like working on Rust?
+4. How much do you think you understand the concept of capabilities?
+
+**Subjective questions**:
+Is there a part of the language / task design which the participant would want to be improved?

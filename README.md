@@ -13,3 +13,9 @@ The studies are as follows:
 1. [Logger Editor](Study/Logger-Editor)
 2. [Network Pool](Study/Network-Pool)
 3. [Simple Money](Study/Simple-Money)
+
+## Repository Structure
+
+- `Reports/` - the necessary paperwork and research before/during conducting the study.
+- `Study/` - contains each of the study designs. The initital templates for the respective langagues are in the respective subfolders, with solutions being in `sols/`
+- `images/` - static data for hosting the content in documentation.
